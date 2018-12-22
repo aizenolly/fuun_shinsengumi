@@ -1,0 +1,44 @@
+# Fuun shinsengumi (*.lbt) (script 0.0.1)
+# script for QuickBMS http://quickbms.aluigi.org
+
+quickbmsver "0.5.24b"
+
+get TIMCOUNT long
+get OFFSET long
+set INFO_OFF long OFFSET
+math INFO_OFF += 16
+
+set TMCOUNT long 1
+
+do
+	goto OFFSET
+	set INFO_OFF long OFFSET
+	math INFO_OFF += 16
+	get DUMMY long
+	get DUMMY int
+	get FILES int
+	set COUNT long 1
+	do
+		goto INFO_OFF
+		get SIZE long
+		math INFO_OFF += 4
+		string NAME p "%d_%d.gim" TMCOUNT COUNT
+		log NAME INFO_OFF SIZE
+		math COUNT += 1
+		math INFO_OFF += SIZE
+	while COUNT <= FILES
+	
+	If TMCOUNT < TIMCOUNT
+		set OFFSET long INFO_OFF
+		goto OFFSET
+	
+		get VALUE long
+		do
+			get VALUE long
+			math OFFSET += 4
+		while VALUE == 0
+	Endif
+
+	math TMCOUNT += 1
+
+while TMCOUNT <= TIMCOUNT
