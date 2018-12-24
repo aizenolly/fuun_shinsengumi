@@ -1,0 +1,61 @@
+# Fuun shinsengumi (BIND_CMP.BND and BIND_NRM.BND) (script 0.0.1)
+# script for QuickBMS http://quickbms.aluigi.org
+
+quickbmsver "0.5.24b"
+
+comtype gzip
+idstring "BND"
+get DUMMY byte
+get DUMMY long
+get DUMMY long
+get DUMMY long
+get INFO_OFF long
+get FILES_OFF long
+get DUMMY long
+get DUMMY long
+get FILES long
+get ENTRIES long
+
+putarray 0 0 ""
+do
+    goto INFO_OFF
+    get FOLDER_LEVEL signed_byte
+    get DUMMY_LEVEL signed_byte
+    get NEXT_SIZE signed_byte
+    get OFFSET long
+    get NAME string
+
+    goto OFFSET
+    get DUMMY long
+    get SIZE long
+    get OFFSET long
+    get ZSIZE long
+
+    if FOLDER_LEVEL >= 0
+        putarray 0 FOLDER_LEVEL NAME
+    else
+        math FOLDER_LEVEL n= FOLDER_LEVEL
+        math FOLDER_LEVEL -= 1
+        set FNAME string ""
+        for j = FOLDER_LEVEL >= 0
+            getarray TMP FOLDER j
+            string TMP += FNAME
+            set FNAME string TMP
+            math j -= 1
+        next
+        string FNAME += NAME
+
+        savepos TMP
+        goto OFFSET
+        get SIGN int
+        goto TMP
+
+		If SIGN == 35615
+	        clog FNAME OFFSET ZSIZE SIZE
+		Else
+			log FNAME OFFSET ZSIZE
+    	endif
+	endif
+
+    math INFO_OFF += NEXT_SIZE
+while NEXT_SIZE >= 0
